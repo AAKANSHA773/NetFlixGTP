@@ -1,13 +1,59 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Header from "./Header";
+import { checkValidData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
+  const [isSigInFrom, setSignInFrom] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const [isSigInFrom, setSignInFrom] = useState(true)
+  const email = useRef(null);
+  const password = useRef(null);
 
-  const toggleSetFrom =()=>{
-    setSignInFrom(!isSigInFrom)
-  }
+  const handleButtonClick = () => {
+    const message = checkValidData(email.current.value, password.current.value);
+    setErrorMessage(message);
+    if (message) return null;
+    if (!isSigInFrom) {
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user)
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user)
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    }
+  };
+
+  const toggleSetFrom = () => {
+    setSignInFrom(!isSigInFrom);
+  };
   return (
     <div>
       <Header />
@@ -18,30 +64,48 @@ const Login = () => {
         />
       </div>
       <div>
-        <form className="w-3/12 absolute  p-8 bg-black mx-auto text-white my-36 left-0 right-0 bg-opacity-80 rounded">
-          <h1 className="font-blod text-3xl py-4 ml-4">{isSigInFrom ? "Sign In" : "Sign Up"}</h1>
-         {!isSigInFrom && 
-         (<input
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="w-3/12 absolute  p-8 bg-black mx-auto text-white my-36 left-0 right-0 bg-opacity-80 rounded"
+        >
+          <h1 className="font-blod text-3xl py-4 ml-4">
+            {isSigInFrom ? "Sign In" : "Sign Up"}
+          </h1>
+          {!isSigInFrom && (
+            <input
+              type="text"
+              placeholder="Full Name"
+              className="p-3 m-4  w-full bg-gray-700 rounded"
+            />
+          )}
+          <input
             type="text"
-            placeholder="Full Name"
-            className="p-3 m-4  w-full bg-gray-700 rounded"
-          />
-          )} 
-         <input
-            type="text"
+            ref={email}
             placeholder="Email Address"
             className="p-3 m-4  w-full bg-gray-700 rounded"
           />
           <input
             type="password"
+            ref={password}
             placeholder="Password"
             className="p-3 m-4 w-full bg-gray-700 rounded"
           />
-          <button className="bg-red-700 p-2 m-4 w-full rounded">
+          <p className="font-bold text-red-500 text-lg py-2 mx-4">
+            {errorMessage}
+          </p>
+          <button
+            className="bg-red-700 p-2 m-4 w-full rounded"
+            onClick={handleButtonClick}
+          >
             {isSigInFrom ? "Sign In" : "Sign Up"}
           </button>
-          <p className="p-3 m-4 cursor-pointer hover:text-red-700" onClick={toggleSetFrom}>
-             {isSigInFrom ? "New to NetFlix? Sign Up Now. " : "Already Registered? Sign In Now"}
+          <p
+            className="p-3 m-4 cursor-pointer hover:text-red-700"
+            onClick={toggleSetFrom}
+          >
+            {isSigInFrom
+              ? "New to NetFlix? Sign Up Now. "
+              : "Already Registered? Sign In Now"}
           </p>
         </form>
       </div>
