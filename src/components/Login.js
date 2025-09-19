@@ -4,13 +4,19 @@ import { checkValidData } from "../utils/validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [isSigInFrom, setSignInFrom] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
 
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
@@ -26,7 +32,20 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log(user)
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: "https://avatars.githubusercontent.com/u/60297202?s=96&v=4",
+          })
+            .then(() => {
+              // Profile updated!
+              // ...
+            })
+            .catch((error) => {
+              // An error occurred
+              // ...
+            });
+          console.log(user);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -41,7 +60,8 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log(user)
+          console.log(user);
+          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -73,6 +93,7 @@ const Login = () => {
           </h1>
           {!isSigInFrom && (
             <input
+            ref ={name}
               type="text"
               placeholder="Full Name"
               className="p-3 m-4  w-full bg-gray-700 rounded"
