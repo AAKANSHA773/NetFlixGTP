@@ -9,7 +9,7 @@ import {
 import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
-import { USERAVTAR, UserImage } from "../utils/constant";
+import { BACKGROUNDIMAGE, USERAVTAR, UserImage } from "../utils/constant";
 
 const Login = () => {
   const [isSigInFrom, setSignInFrom] = useState(true);
@@ -85,8 +85,8 @@ const Login = () => {
       <Header />
       <div className="absolute">
         <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/0b0dad79-ad4d-42b7-b779-8518da389976/web/IN-en-20250908-TRIFECTA-perspective_0647b106-80e1-4d25-9649-63099752b49a_large.jpg"
-          alt="background"
+         src={BACKGROUNDIMAGE}
+            alt="background"
         />
       </div>
       <div>

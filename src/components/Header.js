@@ -1,4 +1,3 @@
-
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router";
@@ -7,22 +6,24 @@ import React, { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
-import { LOGO } from "../utils/constant";
+import { LOGO, SUPPORTED_LANGUAGES } from "../utils/constant";
+import { toggleGptSearchView } from "../utils/gtpSlice";
+import { changeLanguage } from "../utils/configSlice";
 
 const Header = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
+  const showGptSearch = useSelector((store)=>store.gpt.showGptSearch)
   const handleSignOut = () => {
     signOut(auth)
-      .then(() => {
-      })
+      .then(() => {})
       .catch((error) => {
         navigate("/error");
       });
   };
-   useEffect(() => {
-   const unsubscribed = onAuthStateChanged(auth, (user) => {
+  useEffect(() => {
+    const unsubscribed = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid, email, displayName, photoURL } = user;
         dispatch(
@@ -33,28 +34,42 @@ const Header = () => {
             photoURL: photoURL,
           })
         );
-        navigate("/browse")
+        navigate("/browse");
       } else {
         dispatch(removeUser([]));
-         navigate("/")
+        navigate("/");
       }
-   
     });
-    // unsubscribed when component unmount 
-    return ()=> unsubscribed();
-  },[]);
+    // unsubscribed when component unmount
+    return () => unsubscribed();
+  }, []);
 
+  const handlGtpSearchClick = () => {
+    dispatch(toggleGptSearchView());
+  };
 
+  const handleLanguageChange=(e)=>
+   dispatch(changeLanguage(e.target.value))
   return (
     <div className="absolute w-screen z-10 px-8 bg-gradient-to-b from-black flex justify-between">
-      <img
-        className="w-44"
-        src = {LOGO}
-        alt="logo"
-      />
+      <img className="w-44" src={LOGO} alt="logo" />
       {user && (
         <div className="flex p-2">
-          <img className="w-12 h-12 " alt="usericon" src={user.photoURL} />
+         { showGptSearch && <select className="p-2 m-2 bg-gray-900 text-white" onChange={handleLanguageChange}>
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <option key={lang.identifier} value={lang.identifier}>
+                {lang.name}
+              </option>
+            ))}
+
+          </select>}
+          <button
+            className="bg-purple-800 text-white px-4 py-2 my-2 mx-4 rounded"
+            onClick={handlGtpSearchClick}
+          >
+            {showGptSearch?"HomePAge": "GTP Search"}
+          </button>
+          <img className="w-10 h-10 " alt="usericon" src={user.photoURL} />
           <button onClick={handleSignOut}>Sign out</button>
         </div>
       )}
