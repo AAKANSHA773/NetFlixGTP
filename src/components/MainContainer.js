@@ -11,11 +11,14 @@ const MainContainer = () => {
   const mainmovie = movies[8];
   // console.log(mainmovie);
 
-  const{original_title, overview, id} =mainmovie
+  const { original_title, overview, id } = mainmovie;
 
-  return <div><VideoTitle original_title={original_title} overview={overview}/>
-  <VideoBackground movieId ={id}/>
-  </div>;
+  return (
+        <div className="pt-[30%] bg-black md:pt-0">
+      <VideoTitle original_title={original_title} overview={overview} />
+      <VideoBackground movieId={id} />
+    </div>
+  );
 };
 
 export default MainContainer;
