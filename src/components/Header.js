@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import { LOGO, SUPPORTED_LANGUAGES } from "../utils/constant";
 import { toggleGptSearchView } from "../utils/gtpSlice";
+import { useState } from "react";
 import { changeLanguage } from "../utils/configSlice";
 
 const Header = () => {
@@ -15,6 +16,10 @@ const Header = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {})
@@ -50,7 +55,8 @@ const Header = () => {
 
   const handleLanguageChange = (e) => dispatch(changeLanguage(e.target.value));
   return (
-    <div className="absolute w-screen px-8 py-2 bg-gradient-to-b from-black z-10 flex flex-col md:flex-row justify-between">
+
+    <div className="fixed  w-screen px-8 py-2 bg-gradient-to-b from-black z-10 flex flex-col md:flex-row justify-between">
       <img className="w-44 mx-auto md:mx-0" src={LOGO} alt="logo" />
       {user && (
         <div className="flex p-2 justify-between">
@@ -72,8 +78,23 @@ const Header = () => {
           >
             {showGptSearch ? "HomePAge" : "GTP Search"}
           </button>
-          <img className="hidden md:block w-12 h-12"alt="usericon" src={user.photoURL} />
-          <button className="font-bold text-white " onClick={handleSignOut}>Sign out</button>
+
+          <img
+            onClick={toggleMenu}
+            className="hidden md:block w-12 rounded-lg h-12"
+            alt="usericon"
+            src={user.photoURL}
+          />
+          {isMenuOpen && (
+            <div className="absolute top-16 right-5 bg-black text-white m-2 p-2 rounded-lg shadow-lg">
+              <button
+                onClick={handleSignOut}
+                className="font-bold hover:text-red-500"
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

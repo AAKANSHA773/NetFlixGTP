@@ -8,7 +8,7 @@ import { addGeminiMoviesResults } from "../utils/gtpSlice";
 const GptSearchBar = () => {
   const langKey = useSelector((store) => store.config.lang);
   const searchText = useRef(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const searchMoviesTMDB = async (movie) => {
     const data = await fetch(
@@ -32,15 +32,27 @@ const GptSearchBar = () => {
 
     const result = await geminiModel.generateContent(prompt);
     const response = await result.response;
-    const geminiMovies = response.text().split(",");
+    const geminiMovies = response
+      .text()
+      .split(",")
+      .map((m) => m.trim());
     console.log("Recommended Movies:", geminiMovies);
 
     const arrayData = geminiMovies.map((movie) => searchMoviesTMDB(movie));
-    const tmdbResults = await Promise.all(arrayData)
-    console.log(tmdbResults);
-    dispatch(addGeminiMoviesResults({movieNames:geminiMovies,
-                                     movieResults:tmdbResults}))
+    const tmdbResults = await Promise.all(arrayData);
+    console.log("tmdb", tmdbResults);
 
+    const exactlyMatches = tmdbResults.map((movie, index) => {
+      const movieNAme = geminiMovies[index].toLowerCase();
+      return movie.find((m) => m.title?.toLowerCase() === movieNAme);
+    });
+    
+    dispatch(
+      addGeminiMoviesResults({
+        movieNames: geminiMovies,
+        movieResults: exactlyMatches.map(m => m ? [m] : []),
+      })
+    );
   };
 
   return (

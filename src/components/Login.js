@@ -84,17 +84,18 @@ const Login = () => {
     <div>
       <Header />
       <div className="absolute">
-     <img className="h-screen object-cover" 
-         src={BACKGROUNDIMAGE}
-            alt="background"
-        />
+     <div
+  className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat -z-10"
+  style={{ backgroundImage: `url(${BACKGROUNDIMAGE})` }}
+>
+</div>
       </div>
-      <div>
+      <div className="relative z-10 min-h-screen flex items-center justify-center">
         <form
           onSubmit={(e) => e.preventDefault()}
             className="w-full md:w-3/12 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-lg bg-opacity-80"
       >
-          <h1 className="font-blod text-3xl py-4 ml-4">
+          <h1 className="font-blod text-3xl py-2 ml-4">
             {isSigInFrom ? "Sign In" : "Sign Up"}
           </h1>
           {!isSigInFrom && (
