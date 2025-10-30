@@ -22,7 +22,6 @@ const GptSearchBar = () => {
   };
 
   const hanldeGptSearchClick = async () => {
-    console.log(searchText.current.value);
     const query = searchText.current.value;
 
     const prompt = `You are a movie recommendation system.
@@ -36,11 +35,9 @@ const GptSearchBar = () => {
       .text()
       .split(",")
       .map((m) => m.trim());
-    console.log("Recommended Movies:", geminiMovies);
 
     const arrayData = geminiMovies.map((movie) => searchMoviesTMDB(movie));
     const tmdbResults = await Promise.all(arrayData);
-    console.log("tmdb", tmdbResults);
 
     const exactlyMatches = tmdbResults.map((movie, index) => {
       const movieNAme = geminiMovies[index].toLowerCase();
