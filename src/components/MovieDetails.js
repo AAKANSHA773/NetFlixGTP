@@ -1,43 +1,67 @@
 import React from "react";
-import {useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import { IMAGECDNURL } from "../utils/constant";
+import { closeMoviePopup } from "../utils/movieSLice";
 
 const MovieDetails = () => {
-  const movies = useSelector((store) => store.movies?.nowPlayingMovie);
-  const { id } = useParams();
-  
+  const dispatch = useDispatch();
+  const { selectedMovie, isPopupOpen } = useSelector((store) => store.movies);
 
-  const flatMovies = movies ? movies.flat() : [];
-  const movie = flatMovies.find((m) => m.id === Number(id));
+  if (!isPopupOpen || !selectedMovie) return null;
 
+  const movie = selectedMovie;
+  console.log(movie)
   console.log("details", movie);
 
-  const { original_title, overview, poster_path,release_date,vote_average } =
-    movie;
-
+  const { original_title, overview, poster_path,release_date,vote_average ,title} = movie;
   return (
-    <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 p-6 md:p-12 bg-gradient-to-t from-black text-white">
- 
-  <div className="w-full md:w-1/2 flex justify-center">
-    <img
-      alt="Movie Card"
-      src={IMAGECDNURL + poster_path}
-      className="rounded-lg shadow-lg w-[80%] md:w-[55%] "
-    />
-  </div>
+    <div
+      className="
+        fixed inset-0 
+        bg-black bg-opacity-70 
+        flex justify-center items-center 
+        z-[9999] transition-opacity duration-300
+      "
+    >
+      <div
+        className="
+          bg-gray-900 text-white p-6 rounded-2xl 
+          w-11/12 md:w-2/3 lg:w-1/2 
+          shadow-2xl relative 
+          animate-fadeIn
+        "
+      >
+        {/* ❌ Close Button */}
+        <button
+          onClick={() => dispatch(closeMoviePopup())}
+          className="absolute top-3 right-4 text-gray-300 hover:text-white text-2xl"
+        >
+          ✕
+        </button>
 
-  <div className="w-full md:w-1/2">
-    <h1 className="text-3xl md:text-5xl font-bold mb-4">{original_title}</h1>
-    <p className="text-lg md:text-xl text-gray-200 mb-6">{overview}</p>
+        <div className="flex flex-col md:flex-row gap-6">
+          <img
+            src={IMAGECDNURL + poster_path}
+            alt={original_title}
+            className="w-full md:w-1/3 rounded-lg object-cover"
+          />
 
-    <div className="space-y-2 text-gray-300">
-      <p><span className="font-semibold text-white">Release Date:</span> {release_date}</p>
-      <p><span className="font-semibold text-white">Rating:</span> ⭐ {vote_average}</p>
+          <div className="flex flex-col justify-center">
+            <h2 className="text-3xl font-bold mb-3">{title}</h2>
+            <p className="text-gray-400 mb-4 text-sm md:text-base">
+              {overview}
+            </p>
+
+            <p className="mb-1">
+              <strong>Release:</strong> {release_date}
+            </p>
+            <p>
+              <strong>Rating:</strong> ⭐ {vote_average}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
   );
 };
 

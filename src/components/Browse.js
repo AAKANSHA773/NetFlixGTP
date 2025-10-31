@@ -7,6 +7,7 @@ import MainContainer from "./MainContainer";
 import SecondaryContainer from "./SecondaryContainer";
 import useUpcomingMovies from "../hooks/useUpcomingMovies";
 import useTopratedMovies from "../hooks/useTopratedMovies";
+import MovieDetails from "./MovieDetails";
 
 const Browse = () => {
   const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
@@ -26,6 +27,7 @@ const Browse = () => {
           <SecondaryContainer />
         </>
       )}
+      <MovieDetails />
     </div>
   );
 };
